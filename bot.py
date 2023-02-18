@@ -19,5 +19,17 @@ def get_text_messages(message):
         Help = types.KeyboardButton('Помощь')
         markup.add(Check, Help)   
         bot.send_message(message.from_user.id, "Выберите команду для продолжения работы", reply_markup=markup)  
-        
+    elif message.text == 'Проверить безопасность сайта':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        link = types.KeyboardButton('ссылка')
+        qr = types.KeyboardButton('QR-CODE')
+        markup.add(link, qr)  
+        bot.send_message(message.from_user.id, "Выберите, как вы хотите проверить сайт", reply_markup=markup)
+    elif message.text =='Помощь':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        menu = types.KeyboardButton('Меню')
+        markup.add(menu)  
+        bot.send_message(message.from_user.id, "Здравствуйте, это телеграм бот для првоерки сайтов - вы можете так а можете так а так и так", reply_markup=markup)
+    
+
 bot.polling()
