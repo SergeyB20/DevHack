@@ -1,35 +1,37 @@
-import telebot
-from telebot import types
-bot = telebot.TeleBot('6148105017:AAEqPdBYRg3z5K9RLq9AUbeRd1Y1e4L3nno')
+from aiogram import types, executor, Dispatcher, Bot
+from aiogram.dispatcher import FSMContext
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.types import ReplyKeyboardMarkup
+from Forms import form
+import pyzbar.pyzbar as pyzbar
+import  cv2, ssl, re, requests, urllib.request
+from data_base import data, good_url, bad_url
+from pyzbar.pyzbar import decode
+from PIL import Image
 
-@bot.message_handler(commands=['start']) #стартовая команда
-def start(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    Menu = types.KeyboardButton('Меню')
-    markup.add(Menu)
-    bot.send_message(message.chat.id, '👋Привет! Я телеграмм-бот🤖, который проверяет ссылки и QR-коды на безопасность, что бы начать со мной работать нажми на кнопку «меню»❤️', reply_markup=markup)
+
+TOKEN = '6109652125:AAFkN7ksm37Rm3GPVlr3r9Z2R4luowzxwHU'
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot, storage=MemoryStorage())
+keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+rating = 5
+abra = {}
 
 
-@bot.message_handler(content_types=['text'])
-def get_text_messages(message): 
-    if message.text == 'Меню': 
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        
-        Check = types.KeyboardButton('Проверить безопасность сайта')
-        Help = types.KeyboardButton('Помощь')
-        markup.add(Check, Help)   
-        bot.send_message(message.from_user.id, "Выберите команду для продолжения работы", reply_markup=markup)  
-    elif message.text == 'Проверить безопасность сайта':
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        link = types.KeyboardButton('ссылка')
-        qr = types.KeyboardButton('QR-CODE')
-        markup.add(link, qr)  
-        bot.send_message(message.from_user.id, "Выберите, как вы хотите проверить сайт", reply_markup=markup)
-    elif message.text =='Помощь':
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        menu = types.KeyboardButton('Меню')
-        markup.add(menu)  
-        bot.send_message(message.from_user.id, "Здравствуйте, это телеграм бот для првоерки сайтов - вы можете так а можете так а так и так", reply_markup=markup)
-    
+@dp.message_handler(commands=['start'])
+async def get_text_messages(message: types.Message, state: FSMContext):
+    btn = types.KeyboardButton(text='меню')
+    keyboard.add(btn)
+    await bot.send_message(message.chat.id, '👋Привет! Я телеграмм-бот🤖, который проверяет ссылки и QR-коды на безопасность, что бы начать со мной рабоать напиши в чат «меню»❤️', reply_markup=keyboard)
+    await form.meny.set()
 
-bot.polling()
+@dp.message_handler(state= form.meny)
+async def meny2(message: types.Message, state: FSMContext):
+  text = message.text
+  if text == 'меню':
+    btn1 = types.KeyboardButton('проверка ссылки')
+    btn2 = types.KeyboardButton('проверка QR')
+    q = ReplyKeyboardMarkup().add(btn1, btn2)
+    await bot.send_message(message.chat.id, f'Меню:\n\n🏎️проверка ссылки\n\n⚙️проверка QR', reply_markup=q)
+    await form.type.set()
+    executor.start_polling(dp) 
