@@ -7,6 +7,6 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     help = types.KeyboardButton('Помощь')
     markup.add(help)
-    bot.send_message(message.chat.id, 'Привет, это Telegram-Bot для проверки безопасности сайта\nВыбери команду для начала работы', reply_markup=markup)
+    bot.send_message(message.chat.id, '👋Привет! Я телеграмм-бот🤖, который проверяет ссылки и QR-коды на безопасность, что бы начать со мной рабоать напиши в чат «меню»❤️', reply_markup=markup)
 
 bot.polling()
