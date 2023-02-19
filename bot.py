@@ -49,10 +49,10 @@ async def download_photo(message: types.Message):
     
     decocdeQR = decode(Image.open('img/am.jpg'))
     a = (decocdeQR[0].data.decode('ascii'))
-    await bot.send_message(message.chat.id, f'Вот ссылка вашего QR кода {a}, для дальнейшей работы отправте эту ссылку мне')
+    await bot.send_message(message.chat.id, f'Вот ссылка вашего QR кода {a}, для дальнейшей работы отправьте эту ссылку мне')
     await form.href.set()   
  except:
-    await bot.send_message(message.chat.id,'Невозможно распознать qr, занова выберите нужное действие')
+    await bot.send_message(message.chat.id,'Невозможно распознать QR-Code, занова выберите нужное действие')
     await form.type.set()                  
 @dp.message_handler(state= form.href)
 async def meny_fun(message: types.Message, state: FSMContext):
