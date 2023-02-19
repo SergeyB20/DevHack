@@ -9,10 +9,11 @@ from PIL import Image
 from pyzbar.pyzbar import decode
 from PIL import Image
 from Forms import form
+from urllib.parse import urlparse 
 
 
 
-TOKEN = '6148105017:AAEqPdBYRg3z5K9RLq9AUbeRd1Y1e4L3nno'
+TOKEN = '6109652125:AAFkN7ksm37Rm3GPVlr3r9Z2R4luowzxwHU'
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -48,7 +49,7 @@ async def download_photo(message: types.Message):
     await bot.send_message(message.chat.id, f'Вот ссылка вашего QR кода {a}, для дальнейшей работы скопируйте и вставьте эту ссылку')
     await form.type.set()   
  except:
-    await bot.send_message(message.chat.id,'Невозможно распознать qr')
+    await bot.send_message(message.chat.id,'Невозможно распознать qr, занова выберите нужное действие')
     await form.type.set()                  
 @dp.message_handler(state= form.href)
 async def meny_fun(message: types.Message, state: FSMContext):
@@ -57,8 +58,11 @@ async def meny_fun(message: types.Message, state: FSMContext):
   q = ReplyKeyboardMarkup().add(btn1)
   abra['url'] = url
   print(abra['url'])
+  await form.type.set()
   try:
         response = requests.get(abra['url'], headers={'User-Agent': UserAgent().chrome})
+        parsed_url = urlparse(abra['url'])
+        n  = len(parsed_url.netloc.split('.')) 
         if response.status_code == 200:
             global rating
             rating = 5
@@ -72,6 +76,12 @@ async def meny_fun(message: types.Message, state: FSMContext):
         except requests.exceptions.SSLError:
             rating -= 1
             ssl_cert = '❌Ссылка не имеет SSL сертификата'
+        if n > 2:
+                
+                b = '❌Ссылка имеет подозрительные домена'
+                rating -= 1
+        else:
+             b = '✅Ссылка не имеет подозрительные домена'
   except requests.exceptions.RequestException:
         await bot.send_message(message.chat.id, f'неверный URL, попробуйте ввести еще раз')
         await form.href.set()
@@ -83,18 +93,18 @@ async def meny_fun(message: types.Message, state: FSMContext):
             abra['lastpos'] = r.status_code, r.url
         else:
             rs =  '✅Запрос не был перенаправлен'
-        if rating == 2:
+        if rating <= 2:
             btn1 = types.KeyboardButton(text='проверка ссылки',resize_keyboard=True)
             btn2 = types.KeyboardButton(text='проверка QR',resize_keyboard=True)
             q = ReplyKeyboardMarkup(resize_keyboard=True).add(btn1,btn2)
-            await bot.send_message(message.chat.id, f'Скорее всего эта ссылка не безопасна.\nХарактеристика:\n{a}\n{rs}\n Рейтинг: {rating}/5⭐️', reply_markup=q)
+            await bot.send_message(message.chat.id, f'Скорее всего эта ссылка не безопасна.\nХарактеристика:\n{a}\n{rs}\n{b}\n Рейтинг: {rating}/5⭐️', reply_markup=q)
             
             await form.type.set()
         if rating > 2:
             btn1 = types.KeyboardButton(text='проверка ссылки',resize_keyboard=True)
             btn2 = types.KeyboardButton(text='проверка QR',resize_keyboard=True)
             q = ReplyKeyboardMarkup(resize_keyboard=True).add(btn1,btn2)
-            await bot.send_message(message.chat.id, f'Отлично! Ссылка оказалась безопасной.\nХарактеристика:\n{ssl_cert}\n{a}\n{rs}\n Рейтинг: {rating}/5⭐️ ', reply_markup=q)
+            await bot.send_message(message.chat.id, f'Отлично! Ссылка оказалась безопасной.\nХарактеристика:\n{ssl_cert}\n{a}\n{rs}\n{b}\n Рейтинг: {rating}/5⭐️ ', reply_markup=q)
             
             await form.type.set()
 executor.start_polling(dp)
