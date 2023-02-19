@@ -2,7 +2,6 @@ from aiogram import types, executor, Dispatcher, Bot
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import ReplyKeyboardMarkup
-from data_base import good_url, bad_url, data
 import requests
 from fake_useragent import UserAgent
 from PIL import Image
@@ -38,7 +37,8 @@ async def meny1(message: types.Message, state: FSMContext):
   if text == 'проверка ссылки':
     await bot.send_message(message.chat.id, f'отправь мне ссылку на проверку')
     await form.href.set()
-
+  if text == '/start':
+    await form.start.set()
 @dp.message_handler(content_types=["photo"], state= form.qr)
 async def download_photo(message: types.Message):
  await message.photo[-1].download('img/am.jpg')
@@ -46,8 +46,8 @@ async def download_photo(message: types.Message):
     
     decocdeQR = decode(Image.open('img/am.jpg'))
     a = (decocdeQR[0].data.decode('ascii'))
-    await bot.send_message(message.chat.id, f'Вот ссылка вашего QR кода {a}, для дальнейшей работы скопируйте и вставьте эту ссылку')
-    await form.type.set()   
+    await bot.send_message(message.chat.id, f'Вот ссылка вашего QR кода {a}, для дальнейшей работы отправте эту ссылку мне')
+    await form.href.set()   
  except:
     await bot.send_message(message.chat.id,'Невозможно распознать qr, занова выберите нужное действие')
     await form.type.set()                  
@@ -56,6 +56,8 @@ async def meny_fun(message: types.Message, state: FSMContext):
   url = message.text
   btn1 = types.KeyboardButton('меню')
   q = ReplyKeyboardMarkup().add(btn1)
+  if url == '/start':
+    await form.start.set()
   abra['url'] = url
   print(abra['url'])
   await form.type.set()
