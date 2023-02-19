@@ -20,7 +20,7 @@ rating = 5
 abra = {}
 
 
-@dp.message_handler(commands=['start'], state = form.type)
+@dp.message_handler(commands=['start'])
 async def get_text_messages(message: types.Message, state: FSMContext):
     btn1 = types.KeyboardButton(text='проверка ссылки', resize_keyboard=True)
     btn2 = types.KeyboardButton(text='проверка QR', resize_keyboard=True)
@@ -41,6 +41,9 @@ async def meny1(message: types.Message, state: FSMContext):
     await form.start.set()
 @dp.message_handler(content_types=["photo"], state= form.qr)
 async def download_photo(message: types.Message):
+ text = message.text
+ if text == '/start':
+  await form.start.set()
  await message.photo[-1].download('img/am.jpg')
  try:
     
