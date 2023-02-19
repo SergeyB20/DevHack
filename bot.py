@@ -20,7 +20,7 @@ rating = 5
 abra = {}
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(commands=['start'], state = form.type)
 async def get_text_messages(message: types.Message, state: FSMContext):
     btn1 = types.KeyboardButton(text='проверка ссылки', resize_keyboard=True)
     btn2 = types.KeyboardButton(text='проверка QR', resize_keyboard=True)
