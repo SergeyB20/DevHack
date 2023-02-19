@@ -25,7 +25,7 @@ async def get_text_messages(message: types.Message, state: FSMContext):
     btn1 = types.KeyboardButton(text='проверка ссылки', resize_keyboard=True)
     btn2 = types.KeyboardButton(text='проверка QR', resize_keyboard=True)
     keyboard.add(btn1, btn2)
-    await bot.send_message(message.chat.id, f'👋Привет, {message.from_user.username}! Я телеграмм-бот🤖, который проверяет ссылки и QR-коды на безопасность, что бы начать со мной рабоать отправь мне ссылку или QR-код', reply_markup=keyboard)
+    await bot.send_message(message.chat.id, f'👋Привет, {message.from_user.username}! Я телеграмм-бот🤖, который проверяет ссылки и QR-коды на безопасность, что бы начать со мной работать выбери нужную команду', reply_markup=keyboard)
     await form.type.set()
 
 @dp.message_handler(state= form.type)
