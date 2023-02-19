@@ -40,12 +40,16 @@ async def meny1(message: types.Message, state: FSMContext):
 
 @dp.message_handler(content_types=["photo"], state= form.qr)
 async def download_photo(message: types.Message):
-    await message.photo[-1].download('img/am.jpg')
+ await message.photo[-1].download('img/am.jpg')
+ try:
+    
     decocdeQR = decode(Image.open('img/am.jpg'))
     a = (decocdeQR[0].data.decode('ascii'))
-    await bot.send_message(message.chat.id, f'Вот ссылка в вашего QR кода {a}, для дальнейшей работы скопируйте и вставьте эту ссылку')
+    await bot.send_message(message.chat.id, f'Вот ссылка вашего QR кода {a}, для дальнейшей работы скопируйте и вставьте эту ссылку')
     await form.type.set()   
-                      
+ except:
+    await bot.send_message(message.chat.id,'Невозможно распознать qr')
+    await form.type.set()                  
 @dp.message_handler(state= form.href)
 async def meny_fun(message: types.Message, state: FSMContext):
   url = message.text
@@ -56,6 +60,7 @@ async def meny_fun(message: types.Message, state: FSMContext):
   try:
         response = requests.get(abra['url'], headers={'User-Agent': UserAgent().chrome})
         if response.status_code == 200:
+            global rating
             rating = 5
             a = '✅HTTPS доступно'
         else:
